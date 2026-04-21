@@ -57,9 +57,7 @@ class SubjectsProvider(Provider):
         Returns:
             The raw API response.
         """
-        return await self._dispatcher.get(
-            f"/accounts/{{accountSlug}}/subjects/{subject_id}.json"
-        )
+        return await self._dispatcher.get(f"/accounts/{{accountSlug}}/subjects/{subject_id}.json")
 
     async def create(self, data: dict[str, Any]) -> Response:
         """Creates a new subject.

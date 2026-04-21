@@ -233,9 +233,7 @@ class AuthProvider:
             raise AuthorizationFailedError("Revoke is only available for authorization code flow")
 
         url = f"{self._base_url}/oauth/revoke"
-        auth = base64.b64encode(f"{self._client_id}:{self._client_secret}".encode()).decode(
-            "ascii"
-        )
+        auth = base64.b64encode(f"{self._client_id}:{self._client_secret}".encode()).decode("ascii")
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
@@ -332,9 +330,7 @@ class AuthProvider:
     async def _make_request(self, body: dict[str, Any]) -> AccessToken:
         """Internal method to make OAuth2 token requests."""
         url = f"{self._base_url}/oauth/token"
-        auth = base64.b64encode(f"{self._client_id}:{self._client_secret}".encode()).decode(
-            "ascii"
-        )
+        auth = base64.b64encode(f"{self._client_id}:{self._client_secret}".encode()).decode("ascii")
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",

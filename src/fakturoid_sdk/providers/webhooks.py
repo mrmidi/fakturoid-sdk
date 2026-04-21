@@ -42,9 +42,7 @@ class WebhooksProvider(Provider):
         Returns:
             The raw API response.
         """
-        return await self._dispatcher.get(
-            f"/accounts/{{accountSlug}}/webhooks/{webhook_id}.json"
-        )
+        return await self._dispatcher.get(f"/accounts/{{accountSlug}}/webhooks/{webhook_id}.json")
 
     async def create(self, data: dict[str, Any]) -> Response:
         """Creates a new webhook.

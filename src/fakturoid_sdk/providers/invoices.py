@@ -70,9 +70,7 @@ class InvoicesProvider(Provider):
         Returns:
             The raw API response.
         """
-        return await self._dispatcher.get(
-            f"/accounts/{{accountSlug}}/invoices/{invoice_id}.json"
-        )
+        return await self._dispatcher.get(f"/accounts/{{accountSlug}}/invoices/{invoice_id}.json")
 
     async def get_pdf(self, invoice_id: int) -> Response:
         """Downloads the PDF of an invoice.

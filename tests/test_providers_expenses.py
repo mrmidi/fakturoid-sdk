@@ -116,9 +116,7 @@ async def test_delete_payment() -> None:
     response = await provider.delete_payment(6, 8)
 
     assert response.get_body(return_json_as_dict=True) == {"page": 2}
-    dispatcher.delete.assert_awaited_once_with(
-        "/accounts/{accountSlug}/expenses/6/payments/8.json"
-    )
+    dispatcher.delete.assert_awaited_once_with("/accounts/{accountSlug}/expenses/6/payments/8.json")
 
 
 async def test_get_attachment() -> None:

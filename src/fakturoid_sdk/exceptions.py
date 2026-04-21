@@ -99,11 +99,11 @@ class RequestError(FakturoidSdkError):
             error_desc = body.get("error_description")
 
             if error_code and error_desc:
-                return f"{error_code}: {error_desc}"
+                return f"{str(error_code)}: {str(error_desc)}"
             if error_desc:
-                return error_desc
+                return str(error_desc)
             if error_code:
-                return error_code
+                return str(error_code)
 
             return str(body)
         except Exception:
@@ -121,4 +121,5 @@ class ClientError(RequestError):
 
 class ServerError(RequestError):
     """Error raised for 5xx server-side errors."""
+
     pass

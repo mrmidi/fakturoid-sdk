@@ -18,7 +18,7 @@
   </a>
 </p>
 
-A modern, typed, and **async-first** Python SDK for [Fakturoid.cz](https://www.fakturoid.cz/). 
+A modern, typed, and **async-first** Python SDK for [Fakturoid.cz](https://www.fakturoid.cz/).
 
 This library is a Python rewrite of the [official Fakturoid PHP library](https://github.com/fakturoid/fakturoid-php), serving as a core logic reference. It provides an idiomatic Python experience with full `asyncio` support and strict typing.
 
@@ -150,7 +150,7 @@ await fManager.bank_accounts.list()
 ```
 
 ### Downloading an invoice PDF
-Non-JSON endpoints return raw `bytes`. 
+Non-JSON endpoints return raw `bytes`.
 
 **Important:** If you request a PDF immediately after creating an invoice, you might receive a `204 No Content` (empty body) because the PDF isn't generated yet.
 
@@ -161,12 +161,12 @@ async def download_invoice(invoice_id):
     while True:
         # In a real app, use a more defensive loop or a background task
         response = await fManager.dispatcher.get(f"/accounts/{{accountSlug}}/invoices/{invoice_id}/download.pdf")
-        
+
         if response.get_status_code() == 200:
             with open(f"invoice_{invoice_id}.pdf", "wb") as f:
                 f.write(response.get_bytes())
             break
-        
+
         await asyncio.sleep(1)
 ```
 
@@ -235,7 +235,7 @@ try:
     resp = await fManager.dispatcher.get("/accounts/{accountSlug}/account.json")
     print(f"Quota: {resp.get_rate_limit_quota()}")
     print(f"Remaining: {resp.get_rate_limit_remaining()}")
-    
+
 except ClientError as e:
     if e.is_rate_limit_exceeded():
         # Reset time in seconds
@@ -258,7 +258,7 @@ except ClientError as e:
     print(f"Status: {e.status_code}") # 422
     # The API returns error details in the body
     error_data = e.response.get_body(return_json_as_dict=True)
-    print(error_data['errors']) 
+    print(error_data['errors'])
 except ServerError as e:
     print("Fakturoid is temporarily unavailable.")
 ```

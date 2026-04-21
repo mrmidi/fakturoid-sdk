@@ -123,9 +123,7 @@ class InventoryItems(_Resource):
         Returns:
             The item data as JSON.
         """
-        return await self._get_json(
-            f"/accounts/{{accountSlug}}/inventory_items/{item_id}.json"
-        )
+        return await self._get_json(f"/accounts/{{accountSlug}}/inventory_items/{item_id}.json")
 
     async def create(self, data: Mapping[str, Any]) -> JsonValue:
         """Creates a new inventory item.
@@ -162,9 +160,7 @@ class InventoryItems(_Resource):
         Returns:
             The deleted item data as JSON.
         """
-        return await self._delete_json(
-            f"/accounts/{{accountSlug}}/inventory_items/{item_id}.json"
-        )
+        return await self._delete_json(f"/accounts/{{accountSlug}}/inventory_items/{item_id}.json")
 
     async def archive(self, item_id: int) -> JsonValue:
         """Archives an inventory item.

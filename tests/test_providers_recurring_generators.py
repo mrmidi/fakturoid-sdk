@@ -49,7 +49,9 @@ async def test_delete() -> None:
     response = await provider.delete(6)
 
     assert response.get_body(return_json_as_dict=True) == {"page": 2}
-    dispatcher.delete.assert_awaited_once_with("/accounts/{accountSlug}/recurring_generators/6.json")
+    dispatcher.delete.assert_awaited_once_with(
+        "/accounts/{accountSlug}/recurring_generators/6.json"
+    )
 
 
 async def test_update() -> None:

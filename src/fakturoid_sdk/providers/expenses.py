@@ -67,9 +67,7 @@ class ExpensesProvider(Provider):
         Returns:
             The raw API response.
         """
-        return await self._dispatcher.get(
-            f"/accounts/{{accountSlug}}/expenses/{expense_id}.json"
-        )
+        return await self._dispatcher.get(f"/accounts/{{accountSlug}}/expenses/{expense_id}.json")
 
     async def get_attachment(self, expense_id: int, attachment_id: int) -> Response:
         """Downloads an expense attachment.

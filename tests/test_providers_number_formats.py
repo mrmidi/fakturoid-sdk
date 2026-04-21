@@ -8,10 +8,10 @@ from fakturoid_sdk.response import Response
 
 async def test_list_number_formats() -> None:
     payload = (
-        b"[{\"id\":237041,\"format\":\"F#yyyy##ddddd#\","
-        b"\"preview\":\"F202400001, F202400002, ..., F202499999\","
-        b"\"default\":true,\"created_at\":\"2021-01-12T15:46:03.371+01:00\","
-        b"\"updated_at\":\"2022-01-06T21:09:49.550+01:00\"}]"
+        b'[{"id":237041,"format":"F#yyyy##ddddd#",'
+        b'"preview":"F202400001, F202400002, ..., F202499999",'
+        b'"default":true,"created_at":"2021-01-12T15:46:03.371+01:00",'
+        b'"updated_at":"2022-01-06T21:09:49.550+01:00"}]'
     )
 
     dispatcher = Mock()

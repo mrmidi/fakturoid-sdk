@@ -26,8 +26,7 @@ async def test_authentication_url_with_state() -> None:
 
         base_url = "https://app.fakturoid.cz/api/v3/oauth"
         expected = (
-            base_url
-            + "?client_id=clientId&redirect_uri=redirectUri&response_type=code&state=c"
+            base_url + "?client_id=clientId&redirect_uri=redirectUri&response_type=code&state=c"
         )
         assert auth_provider.get_authentication_url("c") == expected
 

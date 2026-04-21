@@ -158,9 +158,7 @@ class AccessToken:
         scope = data.get("scope")
         if scope is not None and not isinstance(scope, str):
             actual_type = type(scope).__name__
-            raise ValueError(
-                f'Invalid "scope". Expected string or null, got {actual_type}.'
-            )
+            raise ValueError(f'Invalid "scope". Expected string or null, got {actual_type}.')
 
         raw_refresh = data.get("refresh_token")
         final_refresh: str | None = None

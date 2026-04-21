@@ -23,7 +23,7 @@ def _coerce_param_value(value: Any) -> Any:
     if isinstance(value, dt.date):
         return value.isoformat()
 
-    if isinstance(value, (list, tuple)):
+    if isinstance(value, list | tuple):
         return [_coerce_param_value(v) for v in value]
 
     return value

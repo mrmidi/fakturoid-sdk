@@ -87,10 +87,25 @@ class RequestError(FakturoidSdkError):
         """Attempts to extract error details from the response body."""
         try:
             body = self.response.get_body(return_json_as_dict=True)
-            if isinstance(body, dict) and "errors" in body:
+            if not isinstance(body, dict):
+                return str(body) if body else None
+
+            # Handle {"errors": {"field": ["msg"]}}
+            if "errors" in body:
                 return str(body["errors"])
-            if isinstance(body, str):
-                return body
+
+            # Handle {"error": "code", "error_description": "msg"}
+            error_code = body.get("error")
+            error_desc = body.get("error_description")
+
+            if error_code and error_desc:
+                return f"{error_code}: {error_desc}"
+            if error_desc:
+                return error_desc
+            if error_code:
+                return error_code
+
+            return str(body)
         except Exception:
             pass
         return None

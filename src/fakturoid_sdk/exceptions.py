@@ -72,11 +72,28 @@ class RequestError(FakturoidSdkError):
             response: The Response object.
             cause: The underlying exception, if any.
         """
-        super().__init__(message)
         self.status_code = status_code
         self.request = request
         self.response = response
         self.__cause__ = cause
+
+        error_details = self._get_error_details()
+        if error_details:
+            message = f"{message}: {error_details}"
+
+        super().__init__(message)
+
+    def _get_error_details(self) -> str | None:
+        """Attempts to extract error details from the response body."""
+        try:
+            body = self.response.get_body(return_json_as_dict=True)
+            if isinstance(body, dict) and "errors" in body:
+                return str(body["errors"])
+            if isinstance(body, str):
+                return body
+        except Exception:
+            pass
+        return None
 
 
 class ClientError(RequestError):

@@ -13,6 +13,9 @@
   <a href="https://github.com/astral-sh/ruff">
     <img src="https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json" alt="Ruff">
   </a>
+  <a href="https://deepwiki.com/mrmidi/fakturoid-sdk">
+    <img src="https://deepwiki.com/badge.svg" alt="Ask DeepWiki">
+  </a>
 </p>
 
 A modern, typed, and **async-first** Python SDK for [Fakturoid.cz](https://www.fakturoid.cz/). 

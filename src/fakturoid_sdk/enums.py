@@ -44,7 +44,6 @@ class InvoiceEvent(_StrEnum):
     UNLOCK = "unlock"
     MARK_AS_UNCOLLECTIBLE = "mark_as_uncollectible"
     UNDO_UNCOLLECTIBLE = "undo_uncollectible"
-    PAY = "pay"  # Deprecated; use Invoices.create_payment()
 
 
 class ExpenseEvent(_StrEnum):

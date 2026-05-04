@@ -119,24 +119,31 @@ fakturoid.auth.set_credentials_callback(on_credentials_changed)
 
 ### Basic Usage
 ```python
-# Initialize and authenticate
-await fManager.auth.auth(AuthType.CLIENT_CREDENTIALS_CODE_FLOW)
+from fakturoid_sdk import AuthType, FakturoidClient
 
-# Create a subject
-subject = await fManager.subjects.create({'name': 'Firma s.r.o.', 'email': 'aloha@pokus.cz'})
+async with FakturoidClient(
+    client_id="{fakturoid-client-id}",
+    client_secret="{fakturoid-client-secret}",
+    user_agent="MyApp (admin@example.com)",
+    account_slug="{fakturoid-account-slug}",
+) as fManager:
+    await fManager.auth.auth(AuthType.CLIENT_CREDENTIALS_CODE_FLOW)
 
-# Create an invoice with lines
-lines = [{'name': 'Big sale', 'quantity': 1, 'unit_price': 1000}]
-invoice = await fManager.invoices.create({'subject_id': subject['id'], 'lines': lines})
+    # Create a subject
+    subject = await fManager.subjects.create({'name': 'Firma s.r.o.', 'email': 'aloha@pokus.cz'})
 
-# Send by email
-await fManager.invoices.create_message(invoice['id'], {'email': 'aloha@pokus.cz'})
+    # Create an invoice with lines
+    lines = [{'name': 'Big sale', 'quantity': 1, 'unit_price': 1000}]
+    invoice = await fManager.invoices.create({'subject_id': subject['id'], 'lines': lines})
 
-# Mark as paid
-await fManager.invoices.create_payment(invoice['id'], {'paid_on': '2026-04-21'})
+    # Send by email
+    await fManager.invoices.create_message(invoice['id'], {'email': 'aloha@pokus.cz'})
 
-# Lock invoice
-await fManager.invoices.fire_action(invoice['id'], 'lock')
+    # Mark as paid
+    await fManager.invoices.create_payment(invoice['id'], {'paid_on': '2026-04-21'})
+
+    # Lock invoice
+    await fManager.invoices.fire_action(invoice["id"], event="lock")
 ```
 
 ### Switch account
@@ -160,6 +167,8 @@ Non-JSON endpoints return raw `bytes`.
 You can use `get_pdf_or_none()` to explicitly handle this, or `wait_for_pdf()` for built-in polling.
 
 ```python
+import asyncio
+
 # Polling manually
 while True:
     pdf = await fManager.invoices.get_pdf_or_none(invoice_id)
@@ -274,6 +283,18 @@ except ClientError as e:
 except ServerError as e:
     print("Fakturoid is temporarily unavailable.")
 ```
+
+---
+
+## SDK Behavior Guarantees
+
+- Async-first; no blocking HTTP calls.
+- `user_agent` is required and sent on all API and OAuth requests.
+- API errors retain request/response context for debugging.
+- Rate-limit headers are exposed through `Response` helpers.
+- PDF 204 readiness is represented explicitly via `PdfNotReadyError`.
+- Fire actions send `event` as a query parameter (not a JSON body).
+- Raw event strings via `fire_action(event=...)` remain available for future API actions.
 
 ---
 

@@ -9,6 +9,7 @@ from .exceptions import (
     FakturoidSdkError,
     InvalidDataError,
     InvalidResponseError,
+    PdfNotReadyError,
     RequestError,
     ServerError,
 )
@@ -36,6 +37,7 @@ __all__ = [
     "InvoiceEvent",
     "InvoiceStatus",
     "JsonValue",
+    "PdfNotReadyError",
     "RetryConfig",
     "RequestError",
     "Response",

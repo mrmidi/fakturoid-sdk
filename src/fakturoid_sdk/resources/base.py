@@ -80,7 +80,9 @@ class _Resource:
         params: Mapping[str, Any] | None = None,
     ) -> JsonValue:
         """Performs a POST request and returns JSON."""
-        return _json(await self._dispatcher.post(path, data, query_params=params))
+        return _json(
+            await self._dispatcher.post(path, data=data, query_params=params)
+        )
 
     async def _patch_json(self, path: str, data: Mapping[str, Any]) -> JsonValue:
         """Performs a PATCH request and returns JSON."""

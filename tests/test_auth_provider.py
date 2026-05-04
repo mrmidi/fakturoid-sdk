@@ -22,7 +22,9 @@ async def test_authentication_url_with_state() -> None:
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", "redirectUri", client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", "redirectUri", client, user_agent="TestAgent"
+        )
 
         base_url = "https://app.fakturoid.cz/api/v3/oauth"
         expected = (
@@ -37,7 +39,9 @@ async def test_authentication_url_without_state() -> None:
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", "redirectUri", client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", "redirectUri", client, user_agent="TestAgent"
+        )
         assert (
             auth_provider.get_authentication_url()
             == "https://app.fakturoid.cz/api/v3/oauth?client_id=clientId&redirect_uri=redirectUri&response_type=code"
@@ -50,7 +54,9 @@ async def test_empty_credentials_reauth() -> None:
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
 
         with pytest.raises(AuthorizationFailedError, match=r"Invalid credentials"):
             await auth_provider.reauth()
@@ -62,7 +68,9 @@ async def test_authorization_code_reauth_with_empty_refresh_token() -> None:
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
         credentials = Credentials(
             refresh_token=None,
             access_token="access_token",
@@ -89,7 +97,9 @@ async def test_authorization_code_reauth_refreshes_and_calls_callback() -> None:
         )
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
         auth_provider.set_credentials_callback(called)
         credentials = Credentials(
             refresh_token="refresh_token",
@@ -113,7 +123,9 @@ async def test_reauth_refresh_with_error_response() -> None:
         )
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
         credentials = Credentials(
             refresh_token="refresh_token",
             access_token="access_token",
@@ -135,7 +147,9 @@ async def test_reauth_refresh_without_access_token_in_response() -> None:
         return httpx.Response(200, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
         credentials = Credentials(
             refresh_token="refresh_token",
             access_token="access_token",
@@ -163,7 +177,9 @@ async def test_client_credentials_flow() -> None:
         )
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
         auth_provider.set_credentials_callback(called)
 
         credentials = await auth_provider.auth(AuthType.CLIENT_CREDENTIALS_CODE_FLOW)
@@ -181,7 +197,9 @@ async def test_client_credentials_empty_response() -> None:
         return httpx.Response(200, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
 
         with pytest.raises(
             AuthorizationFailedError,
@@ -196,7 +214,9 @@ async def test_authorization_code_without_code() -> None:
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
 
         with pytest.raises(AuthorizationFailedError, match=r"Load authentication screen first\."):
             await auth_provider.auth(AuthType.AUTHORIZATION_CODE_FLOW)
@@ -209,7 +229,9 @@ async def test_revoke() -> None:
         return httpx.Response(200, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
         auth_provider.set_credentials(
             Credentials(
                 refresh_token="refresh_token",
@@ -228,7 +250,9 @@ async def test_revoke_500_raises_server_error() -> None:
         return httpx.Response(500, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
         auth_provider.set_credentials(
             Credentials(
                 refresh_token="refresh_token",
@@ -248,7 +272,9 @@ async def test_revoke_400_raises_client_error() -> None:
         return httpx.Response(400, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
         auth_provider.set_credentials(
             Credentials(
                 refresh_token="refresh_token",
@@ -268,7 +294,9 @@ async def test_revoke_client_credentials_flow_not_allowed() -> None:
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
         auth_provider.set_credentials(
             Credentials(
                 refresh_token=None,
@@ -291,7 +319,9 @@ async def test_revoke_without_credentials() -> None:
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", None, client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", None, client, user_agent="TestAgent"
+        )
 
         with pytest.raises(AuthorizationFailedError, match=r"Load authentication screen first\."):
             await auth_provider.revoke()
@@ -313,7 +343,9 @@ async def test_authorization_code_simple_request_credentials() -> None:
         )
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", "redirectUri", client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", "redirectUri", client, user_agent="TestAgent"
+        )
         auth_provider.set_credentials_callback(called)
 
         await auth_provider.request_credentials("CODE")
@@ -333,7 +365,9 @@ async def test_authorization_invalid_response() -> None:
         return httpx.Response(200, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", "redirectUri", client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", "redirectUri", client, user_agent="TestAgent"
+        )
 
         with pytest.raises(
             AuthorizationFailedError,
@@ -348,7 +382,9 @@ async def test_authorization_request_error() -> None:
         raise httpx.ConnectError("test", request=request)
 
     async with _client_with_transport(handler) as client:
-        auth_provider = AuthProvider("clientId", "clientSecret", "redirectUri", client)
+        auth_provider = AuthProvider(
+            "clientId", "clientSecret", "redirectUri", client, user_agent="TestAgent"
+        )
 
         with pytest.raises(
             AuthorizationFailedError,

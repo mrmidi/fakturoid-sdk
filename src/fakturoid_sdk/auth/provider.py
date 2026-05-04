@@ -48,8 +48,11 @@ class AuthProvider:
         client: httpx.AsyncClient,
         *,
         base_url: str = BASE_URL,
+        user_agent: str,
     ) -> None:
         """Initializes the AuthProvider.
+
+        See: https://www.fakturoid.cz/api/v3#user-agent
 
         Args:
             client_id: The OAuth2 client ID.
@@ -57,12 +60,14 @@ class AuthProvider:
             redirect_uri: The OAuth2 redirect URI.
             client: The HTTPX async client to use for requests.
             base_url: The base URL for authentication requests.
+            user_agent: The User-Agent string sent on all OAuth requests.
         """
         self._client_id = client_id
         self._client_secret = client_secret
         self._redirect_uri = redirect_uri
         self._client = client
         self._base_url = base_url
+        self._user_agent = user_agent
 
         self._code: str | None = None
         self._credentials: Credentials | None = None
@@ -238,6 +243,7 @@ class AuthProvider:
             "Accept": "application/json",
             "Content-Type": "application/json",
             "Authorization": f"Basic {auth}",
+            "User-Agent": self._user_agent,
         }
         body = json.dumps({"token": self._credentials.get_refresh_token()}).encode("utf-8")
         request_info = RequestInfo(method="POST", url=url, headers=headers, body=body)
@@ -335,6 +341,7 @@ class AuthProvider:
             "Accept": "application/json",
             "Content-Type": "application/json",
             "Authorization": f"Basic {auth}",
+            "User-Agent": self._user_agent,
         }
 
         try:

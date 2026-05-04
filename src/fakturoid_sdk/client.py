@@ -83,6 +83,9 @@ class FakturoidClient:
             close_http_client: Whether to close the http_client when aclose() is called.
                 Defaults to True if http_client is not provided.
         """
+        if not user_agent.strip():
+            raise ValueError("user_agent must be a non-empty string")
+
         owns_client = http_client is None
         self._http_client = http_client or httpx.AsyncClient()
         self._close_http_client = owns_client if close_http_client is None else close_http_client
@@ -93,6 +96,7 @@ class FakturoidClient:
             redirect_uri=redirect_uri,
             client=self._http_client,
             base_url=base_url,
+            user_agent=user_agent,
         )
         self.auth.set_credentials(credentials)
 

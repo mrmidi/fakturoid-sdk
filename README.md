@@ -1,6 +1,12 @@
 # Fakturoid Python SDK
 
 <p align=center>
+  <a href="https://pypi.org/project/fakturoid-sdk/">
+    <img src="https://img.shields.io/pypi/v/fakturoid-sdk.svg" alt="PyPI">
+  </a>
+  <a href="https://pypi.org/project/fakturoid-sdk/">
+    <img src="https://img.shields.io/pypi/pyversions/fakturoid-sdk.svg" alt="Python Versions">
+  </a>
   <a href="https://github.com/mrmidi/fakturoid-sdk/actions/workflows/ci.yml">
     <img src="https://github.com/mrmidi/fakturoid-sdk/actions/workflows/ci.yml/badge.svg" alt="CI Status">
   </a>
@@ -18,11 +24,15 @@
   </a>
 </p>
 
-A modern, typed, and **async-first** Python SDK for [Fakturoid.cz](https://www.fakturoid.cz/).
+A modern, typed, async-first Python SDK for [Fakturoid API v3](https://www.fakturoid.cz/api/v3).
 
-This library is a Python rewrite of the [official Fakturoid PHP library](https://github.com/fakturoid/fakturoid-php), serving as a core logic reference. It provides an idiomatic Python experience with full `asyncio` support and strict typing.
+It supports OAuth2, invoices, invoice payments, correction documents, expenses, inventory resources, rate-limit helpers, and explicit handling of Fakturoid’s asynchronous PDF generation (`204 No Content`).
 
-Please see the [official API documentation](https://www.fakturoid.cz/api/v3) for detailed information about the endpoints.
+Built with `httpx`, `asyncio`, strict typing, and API-v3-focused behavior.
+
+> This is an independent Python SDK for Fakturoid API v3. It is not an official Fakturoid product.
+
+This project was originally inspired by the official Fakturoid PHP SDK, but is designed as a Python-native async client.
 
 > **Note:** We highly recommend creating a new account specifically for API testing and using a separate user (created via "Settings > User account") for production usage.
 
@@ -48,14 +58,18 @@ Please see the [official API documentation](https://www.fakturoid.cz/api/v3) for
 
 ## Installation
 
-Currently, the library is available directly from GitHub.
-
-### Using pip
 ```bash
-python -m pip install git+https://github.com/mrmidi/fakturoid-sdk.git
+pip install fakturoid-sdk
 ```
 
-### Using uv
+or with `uv`:
+
+```bash
+uv add fakturoid-sdk
+```
+
+Development version:
+
 ```bash
 uv add git+https://github.com/mrmidi/fakturoid-sdk.git
 ```
@@ -286,13 +300,22 @@ except ServerError as e:
 
 ---
 
-## SDK Behavior Guarantees
+## Why this SDK?
 
-- Async-first; no blocking HTTP calls.
-- `user_agent` is required and sent on all API and OAuth requests.
+- Async-first Python API built on `httpx`
+- OAuth2 authorization code and client credentials flows
+- Required `User-Agent` support for Fakturoid API v3
+- Invoice, payment, correction, expense, inventory, and recurring generator resources
+- Explicit PDF readiness handling with `get_pdf_or_none()` and `wait_for_pdf()`
+- Rate-limit header helpers
+- Typed enums and model helpers where useful
+- Raw JSON access remains available for full API flexibility
+
+### Behavior Guarantees
+
+- No blocking HTTP calls.
+- `user_agent` is sent on all API and OAuth requests.
 - API errors retain request/response context for debugging.
-- Rate-limit headers are exposed through `Response` helpers.
-- PDF 204 readiness is represented explicitly via `PdfNotReadyError`.
 - Fire actions send `event` as a query parameter (not a JSON body).
 - Raw event strings via `fire_action(event=...)` remain available for future API actions.
 

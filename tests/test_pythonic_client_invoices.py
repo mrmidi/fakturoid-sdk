@@ -43,6 +43,5 @@ async def test_invoices_get_pdf_returns_bytes() -> None:
 
     assert data == b"%PDF..."
     dispatcher.get.assert_awaited_once_with(
-        "/accounts/{accountSlug}/invoices/123/download.pdf",
-        None,
+        "/accounts/{accountSlug}/invoices/123/download.pdf"
     )

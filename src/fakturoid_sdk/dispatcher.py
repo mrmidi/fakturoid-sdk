@@ -71,8 +71,11 @@ class Dispatcher:
         *,
         base_url: str = BASE_URL,
         retry: RetryConfig | None = None,
+        user_agent: str,
     ) -> None:
         """Initializes the Dispatcher.
+
+        See: https://www.fakturoid.cz/api/v3#user-agent
 
         Args:
             authorization: The authentication provider.
@@ -80,12 +83,14 @@ class Dispatcher:
             account_slug: The Fakturoid account slug.
             base_url: The base URL for the API.
             retry: Optional retry configuration.
+            user_agent: The User-Agent string to identify the application.
         """
         self._authorization = authorization
         self._client = client
         self._account_slug = account_slug
         self._base_url = base_url
         self._retry = retry
+        self._user_agent = user_agent
 
     def set_account_slug(self, account_slug: str) -> None:
         """Sets the account slug for subsequent requests.
@@ -107,17 +112,23 @@ class Dispatcher:
         """
         return await self._dispatch(path, method="GET", query_params=query_params)
 
-    async def post(self, path: str, data: Mapping[str, Any] | None = None) -> Response:
+    async def post(
+        self,
+        path: str,
+        data: Mapping[str, Any] | None = None,
+        query_params: Mapping[str, Any] | None = None,
+    ) -> Response:
         """Performs a POST request.
 
         Args:
             path: The API endpoint path.
             data: Optional request body data.
+            query_params: Optional query parameters.
 
         Returns:
             The API response.
         """
-        return await self._dispatch(path, method="POST", data=data)
+        return await self._dispatch(path, method="POST", data=data, query_params=query_params)
 
     async def patch(self, path: str, data: Mapping[str, Any]) -> Response:
         """Performs a PATCH request.
@@ -221,6 +232,7 @@ class Dispatcher:
         headers = {
             "Content-Type": "application/json",
             "Authorization": f"Bearer {access_token}",
+            "User-Agent": self._user_agent,
         }
 
         request_info = RequestInfo(method=method, url=url, headers=headers, body=body_bytes)

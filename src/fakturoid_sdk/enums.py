@@ -32,19 +32,26 @@ class ExpenseStatus(_StrEnum):
 
 
 class InvoiceEvent(_StrEnum):
-    """Actions that can be performed on an invoice."""
+    """Actions that can be performed on an invoice.
+
+    See: https://www.fakturoid.cz/api/v3/invoices#invoice-actions
+    """
 
     MARK_AS_SENT = "mark_as_sent"
     CANCEL = "cancel"
     UNDO_CANCEL = "undo_cancel"
-    PAY = "pay"
+    LOCK = "lock"
+    UNLOCK = "unlock"
+    MARK_AS_UNCOLLECTIBLE = "mark_as_uncollectible"
+    UNDO_UNCOLLECTIBLE = "undo_uncollectible"
+    PAY = "pay"  # Deprecated; use Invoices.create_payment()
 
 
 class ExpenseEvent(_StrEnum):
-    """Actions that can be performed on an expense."""
+    """Actions that can be performed on an expense.
 
-    REMOVE_PAYMENT = "remove_payment"
-    DELIVER = "deliver"
-    PAY = "pay"
+    See: https://www.fakturoid.cz/api/v3/expenses#post-accounts-slug-expenses-id-fire-json
+    """
+
     LOCK = "lock"
     UNLOCK = "unlock"

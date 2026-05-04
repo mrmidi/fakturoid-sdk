@@ -1,10 +1,12 @@
 from __future__ import annotations
 
+import asyncio
 import builtins
 from collections.abc import AsyncIterator, Mapping, Sequence
 from typing import Any, cast
 
 from fakturoid_sdk.enums import InvoiceEvent, InvoiceStatus
+from fakturoid_sdk.exceptions import PdfNotReadyError
 from fakturoid_sdk.models import Invoice as InvoiceModel
 from fakturoid_sdk.types import DateLike, JsonValue
 
@@ -82,6 +84,8 @@ class Invoices(_Resource):
     async def get(self, invoice_id: int) -> JsonValue:
         """Retrieves a single invoice.
 
+        See: https://www.fakturoid.cz/api/v3/invoices#get-accounts-slug-invoices-id-json
+
         Args:
             invoice_id: The identifier of the invoice.
 
@@ -93,14 +97,67 @@ class Invoices(_Resource):
     async def get_pdf(self, invoice_id: int) -> bytes:
         """Downloads the PDF of an invoice.
 
+        See: https://www.fakturoid.cz/api/v3/invoices#get-invoices-id-pdf
+
         Args:
             invoice_id: The identifier of the invoice.
 
         Returns:
             The PDF content as bytes.
         """
-        return await self._get_bytes(
+        pdf = await self.get_pdf_or_none(invoice_id)
+        return pdf or b""
+
+    async def get_pdf_or_none(self, invoice_id: int) -> bytes | None:
+        """Downloads the PDF of an invoice if it is ready.
+
+        Returns None if the PDF is still being generated (204 No Content).
+
+        See: https://www.fakturoid.cz/api/v3/invoices#get-invoices-id-pdf
+
+        Args:
+            invoice_id: The identifier of the invoice.
+
+        Returns:
+            The PDF content as bytes, or None if not ready.
+        """
+        response = await self._dispatcher.get(
             f"/accounts/{{accountSlug}}/invoices/{invoice_id}/download.pdf"
+        )
+        if response.get_status_code() == 204:
+            return None
+        return response.get_bytes()
+
+    async def wait_for_pdf(
+        self,
+        invoice_id: int,
+        *,
+        attempts: int = 5,
+        delay_seconds: float = 1.0,
+    ) -> bytes:
+        """Waits until the invoice PDF is ready and downloads it.
+
+        See: https://www.fakturoid.cz/api/v3/invoices#get-invoices-id-pdf
+
+        Args:
+            invoice_id: The identifier of the invoice.
+            attempts: Maximum number of polling attempts.
+            delay_seconds: Seconds to wait between attempts.
+
+        Returns:
+            The PDF content as bytes.
+
+        Raises:
+            PdfNotReadyError: If the PDF is still not ready after all attempts.
+        """
+        for attempt in range(attempts):
+            pdf = await self.get_pdf_or_none(invoice_id)
+            if pdf is not None:
+                return pdf
+            if attempt + 1 < attempts:
+                await asyncio.sleep(delay_seconds)
+        raise PdfNotReadyError(
+            f"PDF for invoice {invoice_id} is not ready after {attempts} attempts"
         )
 
     async def get_attachment(self, invoice_id: int, attachment_id: int) -> bytes:
@@ -120,6 +177,8 @@ class Invoices(_Resource):
     async def fire_action(self, invoice_id: int, *, event: str) -> JsonValue:
         """Fires a workflow event on an invoice.
 
+        See: https://www.fakturoid.cz/api/v3/invoices#invoice-actions
+
         Args:
             invoice_id: The identifier of the invoice.
             event: The action event to fire.
@@ -129,7 +188,7 @@ class Invoices(_Resource):
         """
         return await self._post_json(
             f"/accounts/{{accountSlug}}/invoices/{invoice_id}/fire.json",
-            {"event": event},
+            params={"event": event},
         )
 
     async def fire(self, invoice_id: int, *, event: InvoiceEvent) -> JsonValue:
@@ -279,6 +338,8 @@ class Invoices(_Resource):
     async def create(self, data: Mapping[str, Any]) -> JsonValue:
         """Creates a new invoice.
 
+        See: https://www.fakturoid.cz/api/v3/invoices#post-accounts-slug-invoices-json
+
         Args:
             data: The invoice data.
 
@@ -286,6 +347,29 @@ class Invoices(_Resource):
             The created invoice as JSON.
         """
         return await self._post_json("/accounts/{accountSlug}/invoices.json", data)
+
+    async def create_correction(
+        self,
+        invoice_id: int,
+        data: Mapping[str, Any],
+    ) -> JsonValue:
+        """Creates a correction document for an invoice.
+
+        See: https://www.fakturoid.cz/api/v3/invoices#post-accounts-slug-invoices-json
+
+        Args:
+            invoice_id: The Fakturoid invoice ID being corrected.
+            data: Correction invoice payload. Values in data may override defaults
+                except document_type and correction_id are set to Fakturoid's
+                correction semantics.
+
+        Returns:
+            The created correction invoice as JSON.
+        """
+        payload = dict(data)
+        payload["document_type"] = "correction"
+        payload["correction_id"] = invoice_id
+        return await self.create(payload)
 
     async def update(self, invoice_id: int, data: Mapping[str, Any]) -> JsonValue:
         """Updates an existing invoice.

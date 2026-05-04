@@ -24,7 +24,7 @@ class ExpensesProvider(Provider):
 
         Args:
             params: Optional query parameters (since, updated_since, page, subject_id,
-                custom_id, number, variable_symbol, status).
+                custom_id, number, variable_symbol, status, document_type).
 
         Returns:
             The raw API response.
@@ -38,6 +38,7 @@ class ExpensesProvider(Provider):
             "number",
             "variable_symbol",
             "status",
+            "document_type",
         ]
         return await self._dispatcher.get(
             "/accounts/{accountSlug}/expenses.json",
@@ -95,7 +96,7 @@ class ExpensesProvider(Provider):
         """
         return await self._dispatcher.post(
             f"/accounts/{{accountSlug}}/expenses/{expense_id}/fire.json",
-            {"event": event},
+            query_params={"event": event},
         )
 
     async def create(self, data: dict[str, Any]) -> Response:

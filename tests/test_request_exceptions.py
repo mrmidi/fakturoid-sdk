@@ -29,7 +29,7 @@ async def test_client_error_exception(status_code: int) -> None:
     credentials.get_access_token = Mock(return_value="test")
     auth_provider.get_credentials = Mock(return_value=credentials)
 
-    dispatcher = Dispatcher(auth_provider, client)
+    dispatcher = Dispatcher(auth_provider, client, user_agent="Python SDK (test)")
     dispatcher.set_account_slug("account-slug")
 
     with pytest.raises(ClientError) as exc:
@@ -58,7 +58,7 @@ async def test_429_with_rate_limit_headers() -> None:
     credentials.get_access_token = Mock(return_value="test")
     auth_provider.get_credentials = Mock(return_value=credentials)
 
-    dispatcher = Dispatcher(auth_provider, client)
+    dispatcher = Dispatcher(auth_provider, client, user_agent="Python SDK (test)")
     dispatcher.set_account_slug("account-slug")
 
     with pytest.raises(ClientError) as exc:
@@ -90,7 +90,7 @@ async def test_400_is_not_rate_limit_exceeded() -> None:
     credentials.get_access_token = Mock(return_value="test")
     auth_provider.get_credentials = Mock(return_value=credentials)
 
-    dispatcher = Dispatcher(auth_provider, client)
+    dispatcher = Dispatcher(auth_provider, client, user_agent="Python SDK (test)")
     dispatcher.set_account_slug("account-slug")
 
     with pytest.raises(ClientError) as exc:
@@ -117,7 +117,7 @@ async def test_server_error_exception(status_code: int) -> None:
     credentials.get_access_token = Mock(return_value="test")
     auth_provider.get_credentials = Mock(return_value=credentials)
 
-    dispatcher = Dispatcher(auth_provider, client)
+    dispatcher = Dispatcher(auth_provider, client, user_agent="Python SDK (test)")
     dispatcher.set_account_slug("account-slug")
 
     with pytest.raises(ServerError) as exc:

@@ -48,7 +48,8 @@ async def test_invoices_fire_accepts_enum() -> None:
     assert result == {}
     dispatcher.post.assert_awaited_once_with(
         "/accounts/{accountSlug}/invoices/123/fire.json",
-        {"event": "pay"},
+        None,
+        query_params={"event": "pay"},
     )
 
 

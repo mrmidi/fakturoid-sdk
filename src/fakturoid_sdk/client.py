@@ -57,6 +57,7 @@ class FakturoidClient:
         *,
         client_id: str,
         client_secret: str,
+        user_agent: str,
         account_slug: str | None = None,
         redirect_uri: str | None = None,
         credentials: Credentials | None = None,
@@ -67,9 +68,12 @@ class FakturoidClient:
     ) -> None:
         """Initializes the FakturoidClient.
 
+        See: https://www.fakturoid.cz/api/v3#user-agent
+
         Args:
             client_id: The OAuth2 client ID.
             client_secret: The OAuth2 client secret.
+            user_agent: The User-Agent string to identify the application.
             account_slug: The Fakturoid account slug. Required for most operations.
             redirect_uri: The OAuth2 redirect URI.
             credentials: Optional existing credentials to load.
@@ -98,6 +102,7 @@ class FakturoidClient:
             account_slug=account_slug,
             base_url=base_url,
             retry=retry,
+            user_agent=user_agent,
         )
 
         # Resources

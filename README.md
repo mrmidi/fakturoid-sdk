@@ -36,6 +36,7 @@ Please see the [official API documentation](https://www.fakturoid.cz/api/v3) for
   - [Basic Usage](#basic-usage)
   - [Switching Accounts](#switch-account)
   - [Downloading PDF](#downloading-an-invoice-pdf)
+  - [Correction Documents](#correction-documents)
   - [Using custom_id](#using-custom_id)
   - [Inventory Resources](#inventory-resources)
   - [Recurring Generators](#recurring-generators)
@@ -73,6 +74,7 @@ Suitable for applications where users log in with their own Fakturoid credential
    async with FakturoidClient(
        client_id='{fakturoid-client-id}',
        client_secret='{fakturoid-client-secret}',
+       user_agent='MyApp (admin@example.com)',
        redirect_uri='{your-redirect-uri}'
    ) as fakturoid:
        auth_url = fakturoid.auth.get_authentication_url(state="optional-state")
@@ -93,6 +95,7 @@ from fakturoid_sdk import AuthType, FakturoidClient
 async with FakturoidClient(
     client_id='{fakturoid-client-id}',
     client_secret='{fakturoid-client-secret}',
+    user_agent='MyApp (admin@example.com)',
     account_slug='{fakturoid-account-slug}'
 ) as fakturoid:
     await fakturoid.auth.auth(AuthType.CLIENT_CREDENTIALS_CODE_FLOW)
@@ -154,20 +157,29 @@ Non-JSON endpoints return raw `bytes`.
 
 **Important:** If you request a PDF immediately after creating an invoice, you might receive a `204 No Content` (empty body) because the PDF isn't generated yet.
 
+You can use `get_pdf_or_none()` to explicitly handle this, or `wait_for_pdf()` for built-in polling.
+
 ```python
-import asyncio
+# Polling manually
+while True:
+    pdf = await fManager.invoices.get_pdf_or_none(invoice_id)
+    if pdf:
+        with open(f"invoice_{invoice_id}.pdf", "wb") as f:
+            f.write(pdf)
+        break
+    await asyncio.sleep(1)
 
-async def download_invoice(invoice_id):
-    while True:
-        # In a real app, use a more defensive loop or a background task
-        response = await fManager.dispatcher.get(f"/accounts/{{accountSlug}}/invoices/{invoice_id}/download.pdf")
+# Or using the helper
+pdf = await fManager.invoices.wait_for_pdf(invoice_id)
+```
 
-        if response.get_status_code() == 200:
-            with open(f"invoice_{invoice_id}.pdf", "wb") as f:
-                f.write(response.get_bytes())
-            break
+### Correction Documents
+Create a correction document for an existing invoice:
 
-        await asyncio.sleep(1)
+```python
+await fManager.invoices.create_correction(invoice_id, {
+    'lines': [{'name': 'Discount', 'quantity': 1, 'unit_price': -100}]
+})
 ```
 
 ### Using `custom_id`

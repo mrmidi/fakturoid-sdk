@@ -28,6 +28,10 @@ class ConnectionFailedError(FakturoidSdkError):
     """Raised when a network-level error occurs while sending a request."""
 
 
+class PdfNotReadyError(FakturoidSdkError):
+    """Raised when an invoice PDF is not yet generated (204 No Content)."""
+
+
 @dataclass(frozen=True, slots=True)
 class RequestInfo:
     """Information about an HTTP request.

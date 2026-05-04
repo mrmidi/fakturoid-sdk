@@ -24,8 +24,11 @@ class Expenses(_Resource):
         number: str | None = None,
         variable_symbol: str | None = None,
         status: str | ExpenseStatus | None = None,
+        document_type: str | None = None,
     ) -> JsonValue:
         """Lists expenses.
+
+        See: https://www.fakturoid.cz/api/v3/expenses#get-accounts-slug-expenses-json
 
         Args:
             since: Filter by expense date.
@@ -36,6 +39,7 @@ class Expenses(_Resource):
             number: Filter by expense number.
             variable_symbol: Filter by variable symbol.
             status: Filter by expense status.
+            document_type: Filter by document type (invoice, bill, other).
 
         Returns:
             The list of expenses as JSON.
@@ -49,6 +53,7 @@ class Expenses(_Resource):
             number=number,
             variable_symbol=variable_symbol,
             status=status,
+            document_type=document_type,
         )
         return await self._get_json("/accounts/{accountSlug}/expenses.json", params)
 
@@ -75,6 +80,8 @@ class Expenses(_Resource):
     async def get(self, expense_id: int) -> JsonValue:
         """Retrieves a single expense.
 
+        See: https://www.fakturoid.cz/api/v3/expenses#get-accounts-slug-expenses-id-json
+
         Args:
             expense_id: The identifier of the expense.
 
@@ -100,6 +107,8 @@ class Expenses(_Resource):
     async def fire_action(self, expense_id: int, *, event: str) -> JsonValue:
         """Fires a workflow event on an expense.
 
+        See: https://www.fakturoid.cz/api/v3/expenses#post-accounts-slug-expenses-id-fire-json
+
         Args:
             expense_id: The identifier of the expense.
             event: The action event to fire.
@@ -109,7 +118,7 @@ class Expenses(_Resource):
         """
         return await self._post_json(
             f"/accounts/{{accountSlug}}/expenses/{expense_id}/fire.json",
-            {"event": event},
+            params={"event": event},
         )
 
     async def fire(self, expense_id: int, *, event: ExpenseEvent) -> JsonValue:

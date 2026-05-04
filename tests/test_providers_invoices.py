@@ -168,7 +168,7 @@ async def test_fire_action() -> None:
     assert response.get_body(return_json_as_dict=True) == {"page": 2}
     dispatcher.post.assert_awaited_once_with(
         "/accounts/{accountSlug}/invoices/6/fire.json",
-        {"event": "pay"},
+        query_params={"event": "pay"},
     )
 
 

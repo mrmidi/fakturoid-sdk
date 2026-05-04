@@ -111,7 +111,7 @@ class InvoicesProvider(Provider):
         """
         return await self._dispatcher.post(
             f"/accounts/{{accountSlug}}/invoices/{invoice_id}/fire.json",
-            {"event": event},
+            query_params={"event": event},
         )
 
     async def create(self, data: dict[str, Any]) -> Response:

@@ -1,6 +1,6 @@
 [project]
 name = "fakturoid-sdk"
-version = "0.1.1"
+version = "0.2.0"
 description = "Modern Python SDK for the Fakturoid API (port of the official PHP SDK)"
 readme = "README.md"
 authors = [

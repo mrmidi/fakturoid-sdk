@@ -31,6 +31,12 @@ class ConnectionFailedError(FakturoidSdkError):
 class PdfNotReadyError(FakturoidSdkError):
     """Raised when an invoice PDF is not yet generated (204 No Content)."""
 
+    def __init__(self, invoice_id: int, *, attempts: int | None = None) -> None:
+        self.invoice_id = invoice_id
+        self.attempts = attempts
+        suffix = f" after {attempts} attempts" if attempts is not None else ""
+        super().__init__(f"PDF for invoice {invoice_id} is not ready{suffix}")
+
 
 @dataclass(frozen=True, slots=True)
 class RequestInfo:

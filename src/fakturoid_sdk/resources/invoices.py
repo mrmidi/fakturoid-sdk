@@ -104,9 +104,15 @@ class Invoices(_Resource):
 
         Returns:
             The PDF content as bytes.
+
+        Raises:
+            PdfNotReadyError: When Fakturoid returns 204 No Content because
+                the PDF has not been generated yet.
         """
         pdf = await self.get_pdf_or_none(invoice_id)
-        return pdf or b""
+        if pdf is None:
+            raise PdfNotReadyError(invoice_id)
+        return pdf
 
     async def get_pdf_or_none(self, invoice_id: int) -> bytes | None:
         """Downloads the PDF of an invoice if it is ready.
@@ -132,7 +138,7 @@ class Invoices(_Resource):
         self,
         invoice_id: int,
         *,
-        attempts: int = 5,
+        attempts: int = 10,
         delay_seconds: float = 1.0,
     ) -> bytes:
         """Waits until the invoice PDF is ready and downloads it.
@@ -149,16 +155,20 @@ class Invoices(_Resource):
 
         Raises:
             PdfNotReadyError: If the PDF is still not ready after all attempts.
+            ValueError: If attempts < 1 or delay_seconds < 0.
         """
-        for attempt in range(attempts):
+        if attempts < 1:
+            raise ValueError("attempts must be >= 1")
+        if delay_seconds < 0:
+            raise ValueError("delay_seconds must be >= 0")
+
+        for attempt in range(1, attempts + 1):
             pdf = await self.get_pdf_or_none(invoice_id)
             if pdf is not None:
                 return pdf
-            if attempt + 1 < attempts:
+            if attempt < attempts:
                 await asyncio.sleep(delay_seconds)
-        raise PdfNotReadyError(
-            f"PDF for invoice {invoice_id} is not ready after {attempts} attempts"
-        )
+        raise PdfNotReadyError(invoice_id, attempts=attempts)
 
     async def get_attachment(self, invoice_id: int, attachment_id: int) -> bytes:
         """Downloads an invoice attachment.

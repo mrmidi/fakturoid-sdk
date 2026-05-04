@@ -77,7 +77,28 @@ async def test_get_pdf_or_none_returns_bytes_on_200(fakturoid: FakturoidClient) 
     assert result == b"pdf_content"
 
 
-async def test_wait_for_pdf_retries_until_ready(fakturoid: FakturoidClient) -> None:
+async def test_get_pdf_raises_pdfnotreadyerror_on_204(fakturoid: FakturoidClient) -> None:
+    fakturoid.invoices.get_pdf_or_none = AsyncMock(return_value=None)
+
+    with pytest.raises(PdfNotReadyError) as excinfo:
+        await fakturoid.invoices.get_pdf(123)
+
+    assert excinfo.value.invoice_id == 123
+    assert excinfo.value.attempts is None
+    assert "is not ready" in str(excinfo.value)
+
+
+async def test_wait_for_pdf_returns_immediately_if_ready(fakturoid: FakturoidClient) -> None:
+    fakturoid.invoices.get_pdf_or_none = AsyncMock(return_value=b"ready_pdf")
+
+    result = await fakturoid.invoices.wait_for_pdf(123)
+    assert result == b"ready_pdf"
+    assert fakturoid.invoices.get_pdf_or_none.await_count == 1
+
+
+async def test_wait_for_pdf_retries_and_returns_bytes(
+    fakturoid: FakturoidClient,
+) -> None:
     fakturoid.invoices.get_pdf_or_none = AsyncMock(side_effect=[None, None, b"pdf_content"])
 
     result = await fakturoid.invoices.wait_for_pdf(123, delay_seconds=0)
@@ -85,10 +106,22 @@ async def test_wait_for_pdf_retries_until_ready(fakturoid: FakturoidClient) -> N
     assert fakturoid.invoices.get_pdf_or_none.await_count == 3
 
 
-async def test_wait_for_pdf_raises_after_attempts(fakturoid: FakturoidClient) -> None:
+async def test_wait_for_pdf_raises_after_attempts_exhausted(fakturoid: FakturoidClient) -> None:
     fakturoid.invoices.get_pdf_or_none = AsyncMock(return_value=None)
 
-    with pytest.raises(PdfNotReadyError):
+    with pytest.raises(PdfNotReadyError) as excinfo:
         await fakturoid.invoices.wait_for_pdf(123, attempts=3, delay_seconds=0)
 
-    assert fakturoid.invoices.get_pdf_or_none.await_count == 3
+    assert excinfo.value.invoice_id == 123
+    assert excinfo.value.attempts == 3
+    assert "after 3 attempts" in str(excinfo.value)
+
+
+async def test_wait_for_pdf_rejects_attempts_less_than_1(fakturoid: FakturoidClient) -> None:
+    with pytest.raises(ValueError, match="attempts must be >= 1"):
+        await fakturoid.invoices.wait_for_pdf(123, attempts=0)
+
+
+async def test_wait_for_pdf_rejects_negative_delay(fakturoid: FakturoidClient) -> None:
+    with pytest.raises(ValueError, match="delay_seconds must be >= 0"):
+        await fakturoid.invoices.wait_for_pdf(123, delay_seconds=-1)

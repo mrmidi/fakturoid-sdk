@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.2] — 2026-05-04
+
+### Added
+
+- Expanded `Invoice` model with official Fakturoid fields.
+
 ## [0.2.1] — 2026-05-04
 
 ### Added

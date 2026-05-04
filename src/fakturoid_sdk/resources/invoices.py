@@ -271,6 +271,15 @@ class Invoices(_Resource):
             InvoiceModel.from_dict,
         )
 
+    async def find_by_custom_id(self, custom_id: str) -> InvoiceModel | None:
+        """Return the first invoice matching custom_id, or None.
+
+        Fakturoid supports filtering invoices by custom_id, but uniqueness is the
+        caller application's responsibility.
+        """
+        invoices = await self.list_models(custom_id=custom_id, page=1)
+        return invoices[0] if invoices else None
+
     async def iter_list(
         self,
         *,

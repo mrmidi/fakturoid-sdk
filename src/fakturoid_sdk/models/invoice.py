@@ -46,6 +46,11 @@ class Invoice:
         return _get_str(self.raw, "number")
 
     @property
+    def custom_id(self) -> str | None:
+        """The custom identifier of the invoice."""
+        return _get_str(self.raw, "custom_id")
+
+    @property
     def status(self) -> InvoiceStatus | None:
         """The current status of the invoice."""
         return _parse_enum(InvoiceStatus, _get_str(self.raw, "status"))

@@ -209,7 +209,17 @@ await fManager.invoices.create_correction(invoice_id, {
 Store your application's internal record ID in Fakturoid using the `custom_id` attribute.
 
 ```python
-# Filter by custom_id
+# Find existing invoice by custom_id to ensure idempotency
+invoice = await fManager.invoices.find_by_custom_id("repflow-invoice-123")
+if invoice is None:
+    # Create only if missing
+    invoice_json = await fManager.invoices.create({
+        "custom_id": "repflow-invoice-123",
+        "subject_id": subject_id,
+        "lines": [{"name": "Repair", "quantity": 1, "unit_price": 1000}],
+    })
+
+# You can also filter other resources:
 response = await fManager.subjects.list(custom_id='10')
 if response:
     subject = response[0]

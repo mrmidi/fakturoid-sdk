@@ -79,3 +79,39 @@ async def test_required_account_slug_present() -> None:
     await dispatcher.patch("/accounts/{accountSlug}/invoices/1.json", {"name": "Test"})
 
     assert client.request.await_count == 1
+
+
+async def test_dispatcher_sends_empty_json_object_when_data_is_empty_dict() -> None:
+    client = Mock()
+    client.request = AsyncMock(return_value=httpx.Response(200, content=b"{}"))
+
+    auth_provider = Mock()
+    auth_provider.reauth = AsyncMock()
+    credentials = Mock()
+    credentials.get_access_token = Mock(return_value="test_token")
+    auth_provider.get_credentials = Mock(return_value=credentials)
+
+    dispatcher = Dispatcher(auth_provider, client, "test_slug", user_agent="test")
+
+    await dispatcher.post("/test", data={})
+
+    args, kwargs = client.request.call_args
+    assert kwargs.get("content") == b"{}"
+
+
+async def test_dispatcher_sends_no_body_when_data_is_none() -> None:
+    client = Mock()
+    client.request = AsyncMock(return_value=httpx.Response(200, content=b"{}"))
+
+    auth_provider = Mock()
+    auth_provider.reauth = AsyncMock()
+    credentials = Mock()
+    credentials.get_access_token = Mock(return_value="test_token")
+    auth_provider.get_credentials = Mock(return_value=credentials)
+
+    dispatcher = Dispatcher(auth_provider, client, "test_slug", user_agent="test")
+
+    await dispatcher.post("/test", data=None)
+
+    args, kwargs = client.request.call_args
+    assert kwargs.get("content") is None

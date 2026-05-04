@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.1] — 2026-05-04
+
+### Added
+
+- `Invoices.find_by_custom_id()` to easily retrieve a specific invoice by custom identifier.
+
+### Fixed
+
+- `Dispatcher` now correctly serializes explicit empty dictionaries (`{}`) into JSON payloads instead of dropping the request body.
+
 ## [0.2.0] — 2026-05-04
 
 ### Breaking

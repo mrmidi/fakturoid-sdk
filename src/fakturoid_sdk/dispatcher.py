@@ -222,7 +222,7 @@ class Dispatcher:
         access_token = self._authorization.get_credentials().get_access_token()  # type: ignore[union-attr]
 
         body_bytes: bytes | None = None
-        if data:
+        if data is not None:
             body_bytes = json.dumps(data).encode("utf-8")
 
         url = f"{self._base_url}{path}".replace("{accountSlug}", self._account_slug or "")

@@ -45,3 +45,42 @@ async def test_invoices_get_pdf_returns_bytes() -> None:
     dispatcher.get.assert_awaited_once_with(
         "/accounts/{accountSlug}/invoices/123/download.pdf"
     )
+
+
+async def test_find_by_custom_id_returns_first_invoice_model() -> None:
+    dispatcher = Mock()
+    dispatcher.get = AsyncMock(
+        return_value=_json_response(
+            b'[{"id": 1, "custom_id": "c1"}, {"id": 2, "custom_id": "c1"}]'
+        )
+    )
+    invoices = Invoices(dispatcher)
+    
+    result = await invoices.find_by_custom_id("c1")
+    
+    assert result is not None
+    assert result.id == 1
+    assert result.custom_id == "c1"
+
+
+async def test_find_by_custom_id_returns_none_when_no_match() -> None:
+    dispatcher = Mock()
+    dispatcher.get = AsyncMock(return_value=_json_response(b'[]'))
+    invoices = Invoices(dispatcher)
+    
+    result = await invoices.find_by_custom_id("unknown")
+    
+    assert result is None
+
+
+async def test_find_by_custom_id_passes_custom_id_and_page_1() -> None:
+    dispatcher = Mock()
+    dispatcher.get = AsyncMock(return_value=_json_response(b'[]'))
+    invoices = Invoices(dispatcher)
+    
+    await invoices.find_by_custom_id("c1")
+    
+    dispatcher.get.assert_awaited_once_with(
+        "/accounts/{accountSlug}/invoices.json",
+        {"custom_id": "c1", "page": 1},
+    )

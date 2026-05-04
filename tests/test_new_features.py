@@ -26,7 +26,7 @@ async def test_invoice_fire_action_sends_event_as_query_param(fakturoid: Fakturo
 
     fakturoid.dispatcher.post.assert_awaited_with(
         "/accounts/{accountSlug}/invoices/123/fire.json",
-        None,
+        data=None,
         query_params={"event": "lock"},
     )
 
@@ -40,7 +40,7 @@ async def test_invoice_fire_typed_event_uses_value(fakturoid: FakturoidClient) -
 
     fakturoid.dispatcher.post.assert_awaited_with(
         "/accounts/{accountSlug}/invoices/123/fire.json",
-        None,
+        data=None,
         query_params={"event": "lock"},
     )
 
@@ -55,7 +55,7 @@ async def test_create_correction_sets_document_type_and_correction_id(
 
     fakturoid.dispatcher.post.assert_awaited_with(
         "/accounts/{accountSlug}/invoices.json",
-        {"lines": [{"name": "Test"}], "document_type": "correction", "correction_id": 123},
+        data={"lines": [{"name": "Test"}], "document_type": "correction", "correction_id": 123},
         query_params=None,
     )
 

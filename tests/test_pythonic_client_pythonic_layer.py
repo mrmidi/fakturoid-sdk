@@ -43,13 +43,13 @@ async def test_invoices_fire_accepts_enum() -> None:
     dispatcher.post = AsyncMock(return_value=_json_response({}))
 
     invoices = Invoices(dispatcher)
-    result = await invoices.fire(123, event=InvoiceEvent.PAY)
+    result = await invoices.fire(123, event=InvoiceEvent.LOCK)
 
     assert result == {}
     dispatcher.post.assert_awaited_once_with(
         "/accounts/{accountSlug}/invoices/123/fire.json",
-        None,
-        query_params={"event": "pay"},
+        data=None,
+        query_params={"event": "lock"},
     )
 
 

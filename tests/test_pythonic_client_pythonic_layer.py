@@ -2,7 +2,7 @@ import datetime as dt
 import json
 from unittest.mock import AsyncMock, Mock, call
 
-import httpx
+import httpx2
 
 from fakturoid_sdk.client import Invoices
 from fakturoid_sdk.enums import InvoiceEvent, InvoiceStatus
@@ -12,7 +12,7 @@ from fakturoid_sdk.response import Response
 
 def _json_response(payload: object) -> Response:
     return Response(
-        httpx.Response(
+        httpx2.Response(
             200,
             headers={"Content-Type": "application/json"},
             content=json.dumps(payload).encode("utf-8"),

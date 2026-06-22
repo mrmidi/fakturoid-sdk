@@ -1,6 +1,6 @@
 [project]
 name = "fakturoid-sdk"
-version = "0.2.2"
+version = "0.2.3"
 description = "Modern Python SDK for the Fakturoid API (port of the official PHP SDK)"
 readme = "README.md"
 authors = [
@@ -20,7 +20,7 @@ classifiers = [
     "Framework :: AsyncIO",
 ]
 dependencies = [
-    "httpx>=0.28.1",
+    "httpx2>=2.4.0",
     "tenacity>=9.1.4",
 ]
 

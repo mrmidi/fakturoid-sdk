@@ -1,6 +1,6 @@
 from unittest.mock import AsyncMock, Mock
 
-import httpx
+import httpx2
 
 from fakturoid_sdk.providers import UsersProvider
 from fakturoid_sdk.response import Response
@@ -10,7 +10,7 @@ async def test_get_current_user() -> None:
     dispatcher = Mock()
     dispatcher.get = AsyncMock(
         return_value=Response(
-            httpx.Response(
+            httpx2.Response(
                 200,
                 headers={"Content-Type": "application/json"},
                 content=b'{"id": 1, "full_name": "Fakturoid"}',
@@ -33,7 +33,7 @@ async def test_list_users() -> None:
     dispatcher = Mock()
     dispatcher.get = AsyncMock(
         return_value=Response(
-            httpx.Response(
+            httpx2.Response(
                 200,
                 headers={"Content-Type": "application/json"},
                 content=b'[{"id": 1, "full_name": "Fakturoid"}]',

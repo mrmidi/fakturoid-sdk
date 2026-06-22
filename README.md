@@ -28,7 +28,7 @@ A modern, typed, async-first Python SDK for [Fakturoid API v3](https://www.faktu
 
 It supports OAuth2, invoices, invoice payments, correction documents, expenses, inventory resources, rate-limit helpers, and explicit handling of Fakturoid’s asynchronous PDF generation (`204 No Content`).
 
-Built with `httpx`, `asyncio`, strict typing, and API-v3-focused behavior.
+Built with `httpx2`, `asyncio`, strict typing, and API-v3-focused behavior.
 
 > This is an independent Python SDK for Fakturoid API v3. It is not an official Fakturoid product.
 
@@ -312,7 +312,7 @@ except ServerError as e:
 
 ## Why this SDK?
 
-- Async-first Python API built on `httpx`
+- Async-first Python API built on `httpx2`
 - OAuth2 authorization code and client credentials flows
 - Required `User-Agent` support for Fakturoid API v3
 - Invoice, payment, correction, expense, inventory, and recurring generator resources

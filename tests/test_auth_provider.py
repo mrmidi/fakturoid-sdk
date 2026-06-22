@@ -4,21 +4,21 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 from unittest.mock import Mock
 
-import httpx
+import httpx2
 import pytest
 
 from fakturoid_sdk.auth import AuthProvider, AuthType, Credentials
 from fakturoid_sdk.exceptions import AuthorizationFailedError, ClientError, ServerError
 
 
-def _client_with_transport(handler: Any) -> httpx.AsyncClient:
-    transport = httpx.MockTransport(handler)
-    return httpx.AsyncClient(transport=transport)
+def _client_with_transport(handler: Any) -> httpx2.AsyncClient:
+    transport = httpx2.MockTransport(handler)
+    return httpx2.AsyncClient(transport=transport)
 
 
 @pytest.mark.asyncio
 async def test_authentication_url_with_state() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:  # pragma: no cover
+    async def handler(request: httpx2.Request) -> httpx2.Response:  # pragma: no cover
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
@@ -35,7 +35,7 @@ async def test_authentication_url_with_state() -> None:
 
 @pytest.mark.asyncio
 async def test_authentication_url_without_state() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:  # pragma: no cover
+    async def handler(request: httpx2.Request) -> httpx2.Response:  # pragma: no cover
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
@@ -50,7 +50,7 @@ async def test_authentication_url_without_state() -> None:
 
 @pytest.mark.asyncio
 async def test_empty_credentials_reauth() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:  # pragma: no cover
+    async def handler(request: httpx2.Request) -> httpx2.Response:  # pragma: no cover
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
@@ -64,7 +64,7 @@ async def test_empty_credentials_reauth() -> None:
 
 @pytest.mark.asyncio
 async def test_authorization_code_reauth_with_empty_refresh_token() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:  # pragma: no cover
+    async def handler(request: httpx2.Request) -> httpx2.Response:  # pragma: no cover
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
@@ -87,10 +87,10 @@ async def test_authorization_code_reauth_with_empty_refresh_token() -> None:
 async def test_authorization_code_reauth_refreshes_and_calls_callback() -> None:
     called = Mock()
 
-    async def handler(request: httpx.Request) -> httpx.Response:
+    async def handler(request: httpx2.Request) -> httpx2.Response:
         assert request.method == "POST"
-        assert request.url == httpx.URL("https://app.fakturoid.cz/api/v3/oauth/token")
-        return httpx.Response(
+        assert request.url == httpx2.URL("https://app.fakturoid.cz/api/v3/oauth/token")
+        return httpx2.Response(
             200,
             headers={"Content-Type": "application/json"},
             json={"refresh_token": "", "access_token": "access_token", "expires_in": 7200},
@@ -115,8 +115,8 @@ async def test_authorization_code_reauth_refreshes_and_calls_callback() -> None:
 
 @pytest.mark.asyncio
 async def test_reauth_refresh_with_error_response() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(
             200,
             headers={"Content-Type": "application/json"},
             json={"error": "invalid_grant"},
@@ -143,8 +143,8 @@ async def test_reauth_refresh_with_error_response() -> None:
 
 @pytest.mark.asyncio
 async def test_reauth_refresh_without_access_token_in_response() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, headers={"Content-Type": "application/json"}, json={})
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(200, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
         auth_provider = AuthProvider(
@@ -169,8 +169,8 @@ async def test_reauth_refresh_without_access_token_in_response() -> None:
 async def test_client_credentials_flow() -> None:
     called = Mock()
 
-    async def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(
             200,
             headers={"Content-Type": "application/json"},
             json={"refresh_token": "", "access_token": "access_token", "expires_in": 7200},
@@ -193,8 +193,8 @@ async def test_client_credentials_flow() -> None:
 
 @pytest.mark.asyncio
 async def test_client_credentials_empty_response() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, headers={"Content-Type": "application/json"}, json={})
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(200, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
         auth_provider = AuthProvider(
@@ -210,7 +210,7 @@ async def test_client_credentials_empty_response() -> None:
 
 @pytest.mark.asyncio
 async def test_authorization_code_without_code() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:  # pragma: no cover
+    async def handler(request: httpx2.Request) -> httpx2.Response:  # pragma: no cover
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
@@ -224,9 +224,9 @@ async def test_authorization_code_without_code() -> None:
 
 @pytest.mark.asyncio
 async def test_revoke() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:
-        assert request.url == httpx.URL("https://app.fakturoid.cz/api/v3/oauth/revoke")
-        return httpx.Response(200, headers={"Content-Type": "application/json"}, json={})
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        assert request.url == httpx2.URL("https://app.fakturoid.cz/api/v3/oauth/revoke")
+        return httpx2.Response(200, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
         auth_provider = AuthProvider(
@@ -246,8 +246,8 @@ async def test_revoke() -> None:
 
 @pytest.mark.asyncio
 async def test_revoke_500_raises_server_error() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(500, headers={"Content-Type": "application/json"}, json={})
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(500, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
         auth_provider = AuthProvider(
@@ -268,8 +268,8 @@ async def test_revoke_500_raises_server_error() -> None:
 
 @pytest.mark.asyncio
 async def test_revoke_400_raises_client_error() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(400, headers={"Content-Type": "application/json"}, json={})
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(400, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
         auth_provider = AuthProvider(
@@ -290,7 +290,7 @@ async def test_revoke_400_raises_client_error() -> None:
 
 @pytest.mark.asyncio
 async def test_revoke_client_credentials_flow_not_allowed() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:  # pragma: no cover
+    async def handler(request: httpx2.Request) -> httpx2.Response:  # pragma: no cover
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
@@ -315,7 +315,7 @@ async def test_revoke_client_credentials_flow_not_allowed() -> None:
 
 @pytest.mark.asyncio
 async def test_revoke_without_credentials() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:  # pragma: no cover
+    async def handler(request: httpx2.Request) -> httpx2.Response:  # pragma: no cover
         raise AssertionError("Should not be called")
 
     async with _client_with_transport(handler) as client:
@@ -331,8 +331,8 @@ async def test_revoke_without_credentials() -> None:
 async def test_authorization_code_simple_request_credentials() -> None:
     called = Mock()
 
-    async def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(
             200,
             headers={"Content-Type": "application/json"},
             json={
@@ -361,8 +361,8 @@ async def test_authorization_code_simple_request_credentials() -> None:
 
 @pytest.mark.asyncio
 async def test_authorization_invalid_response() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:
-        return httpx.Response(200, headers={"Content-Type": "application/json"}, json={})
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        return httpx2.Response(200, headers={"Content-Type": "application/json"}, json={})
 
     async with _client_with_transport(handler) as client:
         auth_provider = AuthProvider(
@@ -378,8 +378,8 @@ async def test_authorization_invalid_response() -> None:
 
 @pytest.mark.asyncio
 async def test_authorization_request_error() -> None:
-    async def handler(request: httpx.Request) -> httpx.Response:
-        raise httpx.ConnectError("test", request=request)
+    async def handler(request: httpx2.Request) -> httpx2.Response:
+        raise httpx2.ConnectError("test", request=request)
 
     async with _client_with_transport(handler) as client:
         auth_provider = AuthProvider(

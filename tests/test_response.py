@@ -1,10 +1,10 @@
-import httpx
+import httpx2
 
 from fakturoid_sdk.response import Response
 
 
 def test_json_body_is_parsed_to_object() -> None:
-    r = httpx.Response(
+    r = httpx2.Response(
         200,
         headers={"Content-Type": "application/json; charset=utf-8"},
         content=b'{"name":"Test"}',
@@ -17,7 +17,7 @@ def test_json_body_is_parsed_to_object() -> None:
 
 
 def test_json_with_mixed_headers_case() -> None:
-    r = httpx.Response(
+    r = httpx2.Response(
         200,
         headers={"content-type": "application/json; charset=utf-8"},
         content=b'{"name":"Test"}',
@@ -33,7 +33,7 @@ def test_json_with_mixed_headers_case() -> None:
 
 
 def test_other_body() -> None:
-    r = httpx.Response(200, content=b"Test")
+    r = httpx2.Response(200, content=b"Test")
     response = Response(r)
 
     assert response.get_status_code() == 200
@@ -43,7 +43,7 @@ def test_other_body() -> None:
 
 
 def test_rate_limit_headers() -> None:
-    r = httpx.Response(
+    r = httpx2.Response(
         200,
         headers={
             "X-RateLimit-Policy": "default;q=400;w=60",
@@ -60,7 +60,7 @@ def test_rate_limit_headers() -> None:
 
 
 def test_rate_limit_headers_not_present() -> None:
-    r = httpx.Response(200, content=b"")
+    r = httpx2.Response(200, content=b"")
     response = Response(r)
 
     assert response.get_rate_limit_quota() is None

@@ -1,6 +1,6 @@
 from unittest.mock import AsyncMock, Mock
 
-import httpx
+import httpx2
 
 from fakturoid_sdk.client import Invoices
 from fakturoid_sdk.response import Response
@@ -8,7 +8,7 @@ from fakturoid_sdk.response import Response
 
 def _json_response(payload: bytes) -> Response:
     return Response(
-        httpx.Response(
+        httpx2.Response(
             200,
             headers={"Content-Type": "application/json"},
             content=payload,
@@ -17,7 +17,7 @@ def _json_response(payload: bytes) -> Response:
 
 
 def _bytes_response(payload: bytes) -> Response:
-    return Response(httpx.Response(200, content=payload))
+    return Response(httpx2.Response(200, content=payload))
 
 
 async def test_invoices_list_uses_keyword_params() -> None:

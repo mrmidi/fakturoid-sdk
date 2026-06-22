@@ -58,13 +58,13 @@ def test_client_wires_user_agent_to_auth_and_dispatcher() -> None:
 
 async def test_auth_token_request_includes_user_agent() -> None:
     """AuthProvider._make_request() must include User-Agent header."""
-    import httpx
+    import httpx2
 
     provider = AuthProvider(
         "id", "secret", None, AsyncMock(),
         user_agent="TestApp (test@example.com)",
     )
-    mock_response = httpx.Response(
+    mock_response = httpx2.Response(
         200,
         headers={"Content-Type": "application/json"},
         content=b'{"access_token":"tok","token_type":"bearer","expires_in":7200}',
@@ -86,7 +86,7 @@ async def test_auth_token_request_includes_user_agent() -> None:
 
 async def test_auth_revoke_request_includes_user_agent() -> None:
     """AuthProvider.revoke() must include User-Agent header."""
-    import httpx
+    import httpx2
 
     provider = AuthProvider(
         "id", "secret", "http://localhost", AsyncMock(),
@@ -101,7 +101,7 @@ async def test_auth_revoke_request_includes_user_agent() -> None:
         )
     )
 
-    mock_response = httpx.Response(
+    mock_response = httpx2.Response(
         200,
         headers={"Content-Type": "application/json"},
         content=b"{}",

@@ -5,7 +5,7 @@ import json
 from datetime import datetime, timedelta, timezone
 from typing import Any, Protocol
 
-import httpx
+import httpx2
 
 from ..exceptions import (
     AuthorizationFailedError,
@@ -45,7 +45,7 @@ class AuthProvider:
         client_id: str,
         client_secret: str,
         redirect_uri: str | None,
-        client: httpx.AsyncClient,
+        client: httpx2.AsyncClient,
         *,
         base_url: str = BASE_URL,
         user_agent: str,
@@ -58,7 +58,7 @@ class AuthProvider:
             client_id: The OAuth2 client ID.
             client_secret: The OAuth2 client secret.
             redirect_uri: The OAuth2 redirect URI.
-            client: The HTTPX async client to use for requests.
+            client: The HTTPX2 async client to use for requests.
             base_url: The base URL for authentication requests.
             user_agent: The User-Agent string sent on all OAuth requests.
         """
@@ -95,7 +95,7 @@ class AuthProvider:
         for key, value in params.items():
             if value is None:
                 continue
-            query_parts.append(f"{httpx.QueryParams({key: value})}")
+            query_parts.append(f"{httpx2.QueryParams({key: value})}")
         query = "&".join(query_parts)
         return f"{self._base_url}/oauth?{query}"
 
@@ -250,7 +250,7 @@ class AuthProvider:
 
         try:
             response = await self._client.post(url, headers=headers, content=body)
-        except httpx.RequestError as exc:
+        except httpx2.RequestError as exc:
             raise ConnectionFailedError(str(exc)) from exc
 
         wrapped = Response(response)
@@ -355,7 +355,7 @@ class AuthProvider:
 
         try:
             response = await self._client.post(url, headers=headers, content=payload)
-        except httpx.RequestError as exc:
+        except httpx2.RequestError as exc:
             raise ConnectionFailedError(f"Error occurred. Message: {exc}") from exc
 
         wrapped = Response(response)

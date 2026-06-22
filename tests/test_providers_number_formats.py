@@ -1,6 +1,6 @@
 from unittest.mock import AsyncMock, Mock
 
-import httpx
+import httpx2
 
 from fakturoid_sdk.providers import NumberFormatsProvider
 from fakturoid_sdk.response import Response
@@ -17,7 +17,7 @@ async def test_list_number_formats() -> None:
     dispatcher = Mock()
     dispatcher.get = AsyncMock(
         return_value=Response(
-            httpx.Response(200, headers={"Content-Type": "application/json"}, content=payload)
+            httpx2.Response(200, headers={"Content-Type": "application/json"}, content=payload)
         )
     )
 

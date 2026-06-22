@@ -1,6 +1,6 @@
 from unittest.mock import AsyncMock, Mock
 
-import httpx
+import httpx2
 import pytest
 
 from fakturoid_sdk.dispatcher import Dispatcher
@@ -9,7 +9,7 @@ from fakturoid_sdk.exceptions import FakturoidSdkError
 
 async def test_dispatcher_sends_user_agent_header() -> None:
     client = Mock()
-    client.request = AsyncMock(return_value=httpx.Response(200, content=b"{}"))
+    client.request = AsyncMock(return_value=httpx2.Response(200, content=b"{}"))
 
     auth_provider = Mock()
     auth_provider.reauth = AsyncMock()
@@ -29,7 +29,7 @@ async def test_dispatcher_sends_user_agent_header() -> None:
 
 async def test_dispatcher_post_supports_query_params() -> None:
     client = Mock()
-    client.request = AsyncMock(return_value=httpx.Response(200, content=b"{}"))
+    client.request = AsyncMock(return_value=httpx2.Response(200, content=b"{}"))
 
     auth_provider = Mock()
     auth_provider.reauth = AsyncMock()
@@ -66,7 +66,7 @@ async def test_required_account_slug_missing() -> None:
 
 async def test_required_account_slug_present() -> None:
     client = Mock()
-    client.request = AsyncMock(return_value=httpx.Response(200, content=b""))
+    client.request = AsyncMock(return_value=httpx2.Response(200, content=b""))
 
     auth_provider = Mock()
     auth_provider.reauth = AsyncMock()
@@ -83,7 +83,7 @@ async def test_required_account_slug_present() -> None:
 
 async def test_dispatcher_sends_empty_json_object_when_data_is_empty_dict() -> None:
     client = Mock()
-    client.request = AsyncMock(return_value=httpx.Response(200, content=b"{}"))
+    client.request = AsyncMock(return_value=httpx2.Response(200, content=b"{}"))
 
     auth_provider = Mock()
     auth_provider.reauth = AsyncMock()
@@ -101,7 +101,7 @@ async def test_dispatcher_sends_empty_json_object_when_data_is_empty_dict() -> N
 
 async def test_dispatcher_sends_no_body_when_data_is_none() -> None:
     client = Mock()
-    client.request = AsyncMock(return_value=httpx.Response(200, content=b"{}"))
+    client.request = AsyncMock(return_value=httpx2.Response(200, content=b"{}"))
 
     auth_provider = Mock()
     auth_provider.reauth = AsyncMock()

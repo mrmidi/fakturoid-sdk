@@ -1,6 +1,6 @@
 from unittest.mock import AsyncMock, Mock
 
-import httpx
+import httpx2
 
 from fakturoid_sdk.providers import InboxFilesProvider
 from fakturoid_sdk.response import Response
@@ -8,7 +8,7 @@ from fakturoid_sdk.response import Response
 
 def _json_response(payload: bytes) -> Response:
     return Response(
-        httpx.Response(
+        httpx2.Response(
             200,
             headers={"Content-Type": "application/json"},
             content=payload,
@@ -69,7 +69,7 @@ async def test_download() -> None:
     dispatcher = Mock()
     dispatcher.get = AsyncMock(
         return_value=Response(
-            httpx.Response(
+            httpx2.Response(
                 200,
                 headers={"Content-Type": "application/pdf"},
                 content=b"binary file",

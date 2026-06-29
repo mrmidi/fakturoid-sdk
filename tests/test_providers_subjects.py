@@ -1,6 +1,6 @@
 from unittest.mock import AsyncMock, Mock
 
-import httpx
+import httpx2
 import pytest
 
 from fakturoid_sdk.providers import SubjectsProvider
@@ -9,7 +9,7 @@ from fakturoid_sdk.response import Response
 
 def _json_response(payload: bytes) -> Response:
     return Response(
-        httpx.Response(
+        httpx2.Response(
             200,
             headers={"Content-Type": "application/json"},
             content=payload,

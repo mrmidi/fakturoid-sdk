@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from typing import Any
 from urllib.parse import urlencode
 
-import httpx
+import httpx2
 from tenacity import AsyncRetrying, retry_if_exception, stop_after_attempt, wait_random_exponential
 
 from .auth import AuthProviderProtocol
@@ -79,7 +79,7 @@ class Dispatcher:
 
         Args:
             authorization: The authentication provider.
-            client: The HTTPX async client.
+            client: The HTTPX2 async client.
             account_slug: The Fakturoid account slug.
             base_url: The base URL for the API.
             retry: Optional retry configuration.
@@ -241,7 +241,7 @@ class Dispatcher:
 
         try:
             response = await self._client.request(method, url, headers=headers, content=body_bytes)
-        except httpx.RequestError as exc:
+        except httpx2.RequestError as exc:
             logger.error("Connection failed: %s %s - %s", method, url, exc)
             raise ConnectionFailedError(str(exc)) from exc
 

@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Any
 
-import httpx
+import httpx2
 
 from .exceptions import InvalidResponseError
 
@@ -24,13 +24,13 @@ def _to_namespace(value: JsonBody) -> Any:
 
 @dataclass(frozen=True, slots=True)
 class Response:
-    """A wrapper around an HTTPX response.
+    """A wrapper around an HTTPX2 response.
 
     Attributes:
-        original: The underlying HTTPX response.
+        original: The underlying HTTPX2 response.
     """
 
-    original: httpx.Response
+    original: httpx2.Response
 
     def get_status_code(self) -> int:
         """Returns the HTTP status code."""

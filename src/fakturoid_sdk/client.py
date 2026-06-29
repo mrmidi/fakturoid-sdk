@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from types import TracebackType
 
-import httpx
+import httpx2
 
 from .auth import AuthProvider, AuthType, Credentials
 from .dispatcher import Dispatcher, RetryConfig
@@ -61,7 +61,7 @@ class FakturoidClient:
         account_slug: str | None = None,
         redirect_uri: str | None = None,
         credentials: Credentials | None = None,
-        http_client: httpx.AsyncClient | None = None,
+        http_client: httpx2.AsyncClient | None = None,
         base_url: str = Dispatcher.BASE_URL,
         retry: RetryConfig | None = None,
         close_http_client: bool | None = None,
@@ -77,7 +77,7 @@ class FakturoidClient:
             account_slug: The Fakturoid account slug. Required for most operations.
             redirect_uri: The OAuth2 redirect URI.
             credentials: Optional existing credentials to load.
-            http_client: Optional custom HTTPX async client.
+            http_client: Optional custom HTTPX2 async client.
             base_url: The base URL for the API.
             retry: Optional retry configuration.
             close_http_client: Whether to close the http_client when aclose() is called.
@@ -87,7 +87,7 @@ class FakturoidClient:
             raise ValueError("user_agent must be a non-empty string")
 
         owns_client = http_client is None
-        self._http_client = http_client or httpx.AsyncClient()
+        self._http_client = http_client or httpx2.AsyncClient()
         self._close_http_client = owns_client if close_http_client is None else close_http_client
 
         self.auth = AuthProvider(

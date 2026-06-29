@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from unittest.mock import AsyncMock, Mock
 
-import httpx
+import httpx2
 import pytest
 
 from fakturoid_sdk.dispatcher import Dispatcher
@@ -14,7 +14,7 @@ from fakturoid_sdk.exceptions import ClientError, ServerError
     [404, 400, 401, 402, 403, 415, 422, 429, 499],
 )
 async def test_client_error_exception(status_code: int) -> None:
-    response = httpx.Response(
+    response = httpx2.Response(
         status_code,
         headers={"Content-Type": "application/json"},
         content=b'{"error":""}',
@@ -39,7 +39,7 @@ async def test_client_error_exception(status_code: int) -> None:
 
 
 async def test_429_with_rate_limit_headers() -> None:
-    response = httpx.Response(
+    response = httpx2.Response(
         429,
         headers={
             "Content-Type": "application/json",
@@ -75,7 +75,7 @@ async def test_429_with_rate_limit_headers() -> None:
 
 
 async def test_400_is_not_rate_limit_exceeded() -> None:
-    response = httpx.Response(
+    response = httpx2.Response(
         400,
         headers={"Content-Type": "application/json"},
         content=b'{"error":""}',
@@ -102,7 +102,7 @@ async def test_400_is_not_rate_limit_exceeded() -> None:
 
 @pytest.mark.parametrize("status_code", [503, 599])
 async def test_server_error_exception(status_code: int) -> None:
-    response = httpx.Response(
+    response = httpx2.Response(
         status_code,
         headers={"Content-Type": "application/json"},
         content=b'{"error":""}',

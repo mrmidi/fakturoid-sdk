@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.2.3] — 2026-06-29
+
+### Changed
+
+- Migrated HTTP client dependency from `httpx` to `httpx2` (>=2.4.0).
+
 ## [0.2.2] — 2026-05-04
 
 ### Added
